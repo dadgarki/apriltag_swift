@@ -15,7 +15,18 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "apriltag_swift"),
-
+            name: "apriltag_c",
+            exclude: [
+                "apriltag/apriltag_pywrap.c",
+                "apriltag/example/opencv_demo.cc",
+                "apriltag/example/apriltag_demo.c",
+                "apriltag/test/test_detection.c"
+            ],
+            publicHeadersPath: "apriltag"
+        ),
+        .target(
+            name: "apriltag_swift",
+            dependencies: ["apriltag_c"]
+        )
     ]
 )
