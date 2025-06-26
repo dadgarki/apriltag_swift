@@ -22,11 +22,17 @@ let package = Package(
                 "apriltag/example/apriltag_demo.c",
                 "apriltag/test/test_detection.c"
             ],
+            resources: [
+                .copy("apriltag/test/data/")
+            ],
             publicHeadersPath: "apriltag"
         ),
         .target(
             name: "apriltag_swift",
             dependencies: ["apriltag_c"]
+        ),
+        .testTarget(name: "apriltag_swiftTests",
+                    dependencies: ["apriltag_swift"]
         )
     ]
 )
