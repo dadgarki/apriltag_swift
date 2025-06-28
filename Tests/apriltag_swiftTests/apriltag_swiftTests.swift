@@ -8,6 +8,12 @@ import apriltag_c
 
 final class apriltag_swiftTests: XCTestCase {
     
+    func testRepeat() throws {
+        for _ in 0..<100 {
+            try test1()
+        }
+    }
+    
     func test1() throws {
         
         let bundle = Bundle(for: AprilTagDetector.self)
@@ -42,11 +48,19 @@ final class apriltag_swiftTests: XCTestCase {
         let pjpegError: UnsafeMutablePointer<Int32>? = nil
         let pjpeg = pjpeg_create_from_file(imagePath, 0, pjpegError)
         let image = pjpeg_to_u8_baseline(pjpeg)!
-        pjpeg_destroy(pjpeg)
-        let results = detector.processImageU8(image)
-        image_u8_destroy(image)
         
+        let width = image.pointee.width
+        let height = image.pointee.height
+        let stride = image.pointee.stride
+        let buffer = UnsafeBufferPointer(start: image.pointee.buf, count: Int(width*height))
+        let imageData = ImageData(width: UInt32(width), height: UInt32(height), stride: UInt32(stride), data: buffer)
+        let results = detector.processImage(imageData)
+        
+        print("Detected \(results.count) tags")
         XCTAssert(compareTags(results, reference))
+        
+        pjpeg_destroy(pjpeg)
+        image_u8_destroy(image)
     }
     
     func compareTags(_ lhs: [TagDetection], _ rhs: [TagDetection], tolerance: CGFloat = 0.001) -> Bool {
