@@ -25,7 +25,7 @@ public struct ImageData {
 
 public struct TagDetection {
     public let tagId: Int
-    public let transform: simd_float4x4
+    public let transforms: [simd_float4x4]
     public let corners: [CGPoint]
 }
 
@@ -152,7 +152,15 @@ public class AprilTagDetector {
             detInfo.det = d
             estimate_tag_pose_orthogonal_iteration(&detInfo, &err1, &pose1, &err2, &pose2, 50)
         }
-        let transform = poseToTransform(pose: err1 <= err2 ? pose1 : pose2)
+        
+        var transforms = [simd_float4x4]()
+        let t1 = poseToTransform(pose: pose1)
+        transforms.append(t1)
+        if pose2.R != nil {
+            let t2 = poseToTransform(pose: pose2)
+            transforms.append(t2)
+        }
+        
         matd_destroy(pose1.R)
         matd_destroy(pose1.t)
         matd_destroy(pose2.R)
@@ -164,7 +172,7 @@ public class AprilTagDetector {
             CGPointMake(det.p.2.0, det.p.2.1),
             CGPointMake(det.p.3.0, det.p.3.1)
         ]
-        return TagDetection(tagId: id, transform: transform, corners: corners)
+        return TagDetection(tagId: id, transforms: transforms, corners: corners)
     }
     
     deinit {

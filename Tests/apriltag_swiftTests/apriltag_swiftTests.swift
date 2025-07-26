@@ -40,7 +40,7 @@ final class apriltag_swiftTests: XCTestCase {
                 let p2 = CGPointMake(vals[5], vals[6])
                 let p3 = CGPointMake(vals[7], vals[8])
                 return TagDetection(tagId: Int(vals[0]),
-                                    transform: matrix_identity_float4x4,
+                                    transforms: [matrix_identity_float4x4],
                                     corners: [p0, p1, p2, p3])
             }
         
@@ -74,13 +74,13 @@ final class apriltag_swiftTests: XCTestCase {
         let lhs2 = lhs
             .map { t in
                 let sortedCorners = t.corners.sorted(by: pointSorter)
-                return TagDetection(tagId: t.tagId, transform: t.transform, corners: sortedCorners)
+                return TagDetection(tagId: t.tagId, transforms: t.transforms, corners: sortedCorners)
             }
             .sorted(by: tagSorter)
         let rhs2 = rhs
             .map { t in
                 let sortedCorners = t.corners.sorted(by: pointSorter)
-                return TagDetection(tagId: t.tagId, transform: t.transform, corners: sortedCorners)
+                return TagDetection(tagId: t.tagId, transforms: t.transforms, corners: sortedCorners)
             }
             .sorted(by: tagSorter)
         
